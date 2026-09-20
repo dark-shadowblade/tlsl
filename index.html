@@ -37,8 +37,6 @@ body {
     padding: 38px 0 60px;
 }
 
-/* HEADER */
-
 .header {
     margin-bottom: 25px;
 }
@@ -55,8 +53,6 @@ body {
     font-size: 14px;
 }
 
-/* ERROR */
-
 .error {
     display: none;
     background: rgba(255, 79, 92, .12);
@@ -66,8 +62,6 @@ body {
     border-radius: 12px;
     margin-bottom: 18px;
 }
-
-/* CURRENT STATUS */
 
 .status-card {
     display: flex;
@@ -122,8 +116,6 @@ body {
     font-size: 12px;
 }
 
-/* STATS */
-
 .stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -152,8 +144,6 @@ body {
     line-height: 1.35;
 }
 
-/* SECTION */
-
 .section {
     margin-top: 27px;
 }
@@ -163,8 +153,6 @@ body {
     font-weight: 700;
     margin-bottom: 13px;
 }
-
-/* SELECTOR */
 
 select {
     width: 100%;
@@ -182,8 +170,6 @@ select:focus {
     border-color: #36536f;
 }
 
-/* HISTORY */
-
 .history {
     margin-top: 13px;
     border: 1px solid var(--border);
@@ -191,8 +177,6 @@ select:focus {
     overflow: hidden;
     background: #0d1117;
 }
-
-/* DAY */
 
 .day {
     border-bottom: 1px solid #202631;
@@ -252,8 +236,6 @@ select:focus {
     transform: rotate(180deg);
 }
 
-/* DETAILS */
-
 .day-details {
     display: none;
     padding: 0 19px 18px;
@@ -304,16 +286,12 @@ select:focus {
     font-size: 13px;
 }
 
-/* FOOTER */
-
 .footer {
     text-align: center;
     color: #59616d;
     font-size: 11px;
     margin-top: 35px;
 }
-
-/* MOBILE */
 
 @media (max-width: 700px) {
 
@@ -370,8 +348,6 @@ select:focus {
 
     <div id="error" class="error"></div>
 
-    <!-- CURRENT STATUS -->
-
     <div class="status-card">
 
         <div class="status-left">
@@ -396,58 +372,29 @@ select:focus {
 
     </div>
 
-
-    <!-- STAT CARDS -->
-
     <div class="stats">
 
         <div class="stat">
-            <div class="stat-label">
-                Online Since
-            </div>
-
-            <div id="onlineSince" class="stat-value">
-                —
-            </div>
+            <div class="stat-label">Online Since</div>
+            <div id="onlineSince" class="stat-value">—</div>
         </div>
 
-
         <div class="stat">
-            <div class="stat-label">
-                Last Seen
-            </div>
-
-            <div id="lastSeen" class="stat-value">
-                —
-            </div>
+            <div class="stat-label">Last Seen</div>
+            <div id="lastSeen" class="stat-value">—</div>
         </div>
 
-
         <div class="stat">
-            <div class="stat-label">
-                Today Online
-            </div>
-
-            <div id="todayTotal" class="stat-value">
-                0s
-            </div>
+            <div class="stat-label">Today Online</div>
+            <div id="todayTotal" class="stat-value">0s</div>
         </div>
 
-
         <div class="stat">
-            <div class="stat-label">
-                Sessions
-            </div>
-
-            <div id="sessionCount" class="stat-value">
-                0
-            </div>
+            <div class="stat-label">Sessions</div>
+            <div id="sessionCount" class="stat-value">0</div>
         </div>
 
     </div>
-
-
-    <!-- ACTIVITY HISTORY -->
 
     <div class="section">
 
@@ -459,24 +406,16 @@ select:focus {
 
     </div>
 
-
     <div id="history" class="history"></div>
 
-
     <div class="footer">
-        Automatically refreshes every 60 seconds
+        Automatically refreshes every 2 seconds
     </div>
 
 </div>
 
 
 <script>
-
-/*
-==================================================
-LIVE DATA SOURCE
-==================================================
-*/
 
 const DATA_URL =
 "https://dark-shadowblade.github.io/tad/activity_7days.json";
@@ -487,14 +426,14 @@ let data = null;
 let selectedDay = "today";
 
 
-/* HELPER */
-
 function $(id) {
     return document.getElementById(id);
 }
 
 
-/* DATE FUNCTIONS */
+/* =========================
+   DATE FUNCTIONS
+========================= */
 
 function getDayKey(date) {
 
@@ -509,11 +448,17 @@ function formatDateTime(iso) {
 
     if (!iso) return "—";
 
+    const date = new Date(iso);
+
+    if (isNaN(date.getTime())) {
+        return "—";
+    }
+
     return new Intl.DateTimeFormat("en-IN", {
         timeZone: TIMEZONE,
         dateStyle: "medium",
-        timeStyle: "short"
-    }).format(new Date(iso));
+        timeStyle: "medium"
+    }).format(date);
 
 }
 
@@ -522,25 +467,32 @@ function formatTime(iso) {
 
     if (!iso) return "—";
 
+    const date = new Date(iso);
+
+    if (isNaN(date.getTime())) {
+        return "—";
+    }
+
     return new Intl.DateTimeFormat("en-IN", {
         timeZone: TIMEZONE,
         hour: "numeric",
-        minute: "2-digit"
-    }).format(new Date(iso));
+        minute: "2-digit",
+        second: "2-digit"
+    }).format(date);
 
 }
 
 
 function formatDay(day) {
 
-    const d =
+    const date =
         new Date(day + "T00:00:00");
 
     return new Intl.DateTimeFormat("en-IN", {
         day: "2-digit",
         month: "short",
         year: "numeric"
-    }).format(d);
+    }).format(date);
 
 }
 
@@ -548,20 +500,15 @@ function formatDay(day) {
 function getLast7Days() {
 
     const days = [];
-
     const now = new Date();
 
     for (let i = 0; i < 7; i++) {
 
         const d = new Date(now);
 
-        d.setDate(
-            d.getDate() - i
-        );
+        d.setDate(d.getDate() - i);
 
-        days.push(
-            getDayKey(d)
-        );
+        days.push(getDayKey(d));
 
     }
 
@@ -570,7 +517,9 @@ function getLast7Days() {
 }
 
 
-/* DURATION */
+/* =========================
+   DURATION
+========================= */
 
 function sessionDuration(session) {
 
@@ -582,6 +531,10 @@ function sessionDuration(session) {
         ? new Date(session.end)
         : new Date();
 
+    if (isNaN(start.getTime())) {
+        return 0;
+    }
+
     return Math.max(
         0,
         (end - start) / 1000
@@ -592,11 +545,10 @@ function sessionDuration(session) {
 
 function formatDuration(seconds) {
 
-    seconds =
-        Math.max(
-            0,
-            Math.floor(seconds)
-        );
+    seconds = Math.max(
+        0,
+        Math.floor(seconds)
+    );
 
     const days =
         Math.floor(seconds / 86400);
@@ -615,111 +567,112 @@ function formatDuration(seconds) {
 
     const parts = [];
 
-    if (days)
+    if (days) {
         parts.push(days + "d");
+    }
 
-    if (hours)
+    if (hours) {
         parts.push(hours + "h");
+    }
 
-    if (minutes)
+    if (minutes) {
         parts.push(minutes + "m");
+    }
 
-    if (!parts.length || seconds)
+    if (!parts.length || seconds) {
         parts.push(seconds + "s");
+    }
 
     return parts.join(" ");
 
 }
 
 
-/* GET SESSIONS FOR A DAY */
+/* =========================
+   GET SESSIONS
+========================= */
 
 function getSessions(day) {
 
-    if (!data)
+    if (!data) {
         return [];
+    }
 
-    return (data.sessions || [])
-        .filter(session => {
+    return (data.sessions || []).filter(
+        session => {
+
+            if (!session.start) {
+                return false;
+            }
 
             return getDayKey(
                 new Date(session.start)
             ) === day;
 
-        });
+        }
+    );
 
 }
 
 
-/* DAY TOTAL */
+/* =========================
+   DAY TOTAL
+========================= */
 
 function getDayTotal(day) {
 
-    if (!data)
+    if (!data) {
         return 0;
+    }
 
     let total = 0;
 
+    for (const session of getSessions(day)) {
 
-    for (
-        const session
-        of getSessions(day)
-    ) {
-
-        total +=
-            sessionDuration(session);
+        total += sessionDuration(session);
 
     }
 
-
-    /* CURRENT ONLINE SESSION */
+    /*
+       Add current online session.
+    */
 
     if (data.current_online_since) {
 
+        const start =
+            new Date(
+                data.current_online_since
+            );
+
         if (
-            getDayKey(
-                new Date(
-                    data.current_online_since
-                )
-            ) === day
+            !isNaN(start.getTime()) &&
+            getDayKey(start) === day
         ) {
 
             total +=
                 (
                     Date.now() -
-                    new Date(
-                        data.current_online_since
-                    ).getTime()
+                    start.getTime()
                 ) / 1000;
 
         }
 
     }
 
-
     return total;
 
 }
 
 
-/* TODAY TOTAL */
-
-function getTodayTotal() {
-
-    return getDayTotal(
-        getDayKey(new Date())
-    );
-
-}
-
-
-/* TOP STATUS */
+/* =========================
+   TOP STATUS
+========================= */
 
 function renderTop() {
 
-    if (!data)
+    if (!data) {
         return;
-
+    }
 
     const status =
         data.last_status ||
@@ -729,17 +682,14 @@ function renderTop() {
             : "OFFLINE"
         );
 
-
     $("status").textContent =
         status;
-
 
     const dot =
         $("statusDot");
 
     dot.className =
         "status-dot";
-
 
     if (status === "ONLINE") {
 
@@ -751,34 +701,35 @@ function renderTop() {
 
     }
 
-
     $("onlineSince").textContent =
         data.current_online_since
         ? formatDateTime(
             data.current_online_since
-          )
+        )
         : "—";
-
 
     $("lastSeen").textContent =
         data.last_seen
         ? formatDateTime(
             data.last_seen
-          )
+        )
         : "—";
-
 
     $("todayTotal").textContent =
         formatDuration(
-            getTodayTotal()
+            getDayTotal(
+                getDayKey(new Date())
+            )
         );
 
+    /*
+       Show today's sessions.
+    */
 
     $("sessionCount").textContent =
-        (
-            data.sessions || []
+        getSessions(
+            getDayKey(new Date())
         ).length;
-
 
     $("updatedAt").textContent =
         data.updated_at
@@ -791,15 +742,19 @@ function renderTop() {
 }
 
 
-/* SELECTOR */
+/* =========================
+   SELECTOR
+========================= */
 
 function populateSelector() {
 
     const select =
         $("daySelect");
 
-    select.innerHTML = "";
+    const previous =
+        selectedDay;
 
+    select.innerHTML = "";
 
     const today =
         getDayKey(new Date());
@@ -822,18 +777,14 @@ function populateSelector() {
     );
 
 
-    /* OTHER DAYS */
+    /* LAST 7 DAYS */
 
     getLast7Days()
-        .filter(
-            day => day !== today
-        )
+        .filter(day => day !== today)
         .forEach(day => {
 
             const option =
-                document.createElement(
-                    "option"
-                );
+                document.createElement("option");
 
             option.value =
                 day;
@@ -851,9 +802,7 @@ function populateSelector() {
     /* ALL 7 DAYS */
 
     const all =
-        document.createElement(
-            "option"
-        );
+        document.createElement("option");
 
     all.value =
         "all";
@@ -864,13 +813,32 @@ function populateSelector() {
     select.appendChild(all);
 
 
-    select.value =
-        selectedDay;
+    if (
+        [...select.options].some(
+            option =>
+                option.value === previous
+        )
+    ) {
+
+        select.value =
+            previous;
+
+    } else {
+
+        selectedDay =
+            "today";
+
+        select.value =
+            "today";
+
+    }
 
 }
 
 
-/* CREATE SESSION HTML */
+/* =========================
+   SESSION HTML
+========================= */
 
 function renderSessions(
     container,
@@ -880,9 +848,7 @@ function renderSessions(
     if (!sessions.length) {
 
         const empty =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         empty.className =
             "empty";
@@ -890,9 +856,7 @@ function renderSessions(
         empty.textContent =
             "No sessions recorded.";
 
-        container.appendChild(
-            empty
-        );
+        container.appendChild(empty);
 
         return;
 
@@ -905,74 +869,70 @@ function renderSessions(
         .forEach(session => {
 
             const div =
-                document.createElement(
-                    "div"
-                );
+                document.createElement("div");
 
             div.className =
                 "session";
 
 
-            div.innerHTML = `
-
-                <div class="session-main">
-
-                    <div class="session-time">
-
-                        ${formatTime(
-                            session.start
-                        )}
-
-                        →
-
-                        ${
-                            session.end
-                            ? formatTime(
-                                session.end
-                              )
-                            : "Now"
-                        }
-
-                    </div>
-
-                    <div class="session-duration">
-
-                        ${formatDuration(
-                            sessionDuration(
-                                session
-                            )
-                        )}
-
-                    </div>
-
-                </div>
-
-                <div class="session-end">
-
-                    ${
-                        session.end
-                        ? "Ended " +
-                          formatDateTime(
-                              session.end
-                          )
-                        : "Currently online"
-                    }
-
-                </div>
-
-            `;
+            const start =
+                formatTime(
+                    session.start
+                );
 
 
-            container.appendChild(
-                div
-            );
+            const end =
+                session.end
+                ? formatTime(session.end)
+                : formatTime(
+                    new Date().toISOString()
+                );
+
+
+            const duration =
+                formatDuration(
+                    sessionDuration(session)
+                );
+
+
+            const endedText =
+                session.end
+                ? "Ended " +
+                  formatDateTime(session.end)
+                : "Currently online";
+
+
+            div.innerHTML =
+
+                '<div class="session-main">' +
+
+                    '<div class="session-time">' +
+                        start +
+                        ' → ' +
+                        end +
+                    '</div>' +
+
+                    '<div class="session-duration">' +
+                        duration +
+                    '</div>' +
+
+                '</div>' +
+
+                '<div class="session-end">' +
+                    endedText +
+                '</div>';
+
+
+            container.appendChild(div);
 
         });
 
 }
 
 
-/* SINGLE DAY */
+/* =========================
+   SINGLE DAY
+========================= */
 
 function renderSingleDay(day) {
 
@@ -981,80 +941,61 @@ function renderSingleDay(day) {
 
     history.innerHTML = "";
 
-
     const sessions =
         getSessions(day);
 
-
     const wrapper =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
     wrapper.className =
         "day";
 
 
     const summary =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
     summary.className =
         "day-summary";
 
 
-    summary.innerHTML = `
-
-        <div>
-
-            <div class="day-name">
-
-                ${
-                    day ===
-                    getDayKey(new Date())
-                    ? "Today"
-                    : formatDay(day)
-                }
-
-            </div>
-
-            <div class="day-date">
-
-                ${formatDay(day)}
-
-            </div>
-
-        </div>
+    const dayTitle =
+        day === getDayKey(new Date())
+        ? "Today"
+        : formatDay(day);
 
 
-        <div class="day-total">
+    summary.innerHTML =
 
-            ${formatDuration(
+        '<div>' +
+
+            '<div class="day-name">' +
+                dayTitle +
+            '</div>' +
+
+            '<div class="day-date">' +
+                formatDay(day) +
+            '</div>' +
+
+        '</div>' +
+
+        '<div class="day-total">' +
+            formatDuration(
                 getDayTotal(day)
-            )}
+            ) +
+        '</div>' +
 
-        </div>
-
-
-        <div class="day-sessions">
-
-            ${sessions.length}
-            ${
+        '<div class="day-sessions">' +
+            sessions.length +
+            (
                 sessions.length === 1
-                ? "session"
-                : "sessions"
-            }
-
-        </div>
-
-    `;
+                ? " session"
+                : " sessions"
+            ) +
+        '</div>';
 
 
     const details =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
     details.className =
         "day-details";
@@ -1066,29 +1007,19 @@ function renderSingleDay(day) {
     );
 
 
-    wrapper.appendChild(
-        summary
-    );
+    wrapper.appendChild(summary);
+    wrapper.appendChild(details);
 
-    wrapper.appendChild(
-        details
-    );
+    history.appendChild(wrapper);
 
-    history.appendChild(
-        wrapper
-    );
-
-
-    /* OPEN SELECTED DAY */
-
-    wrapper.classList.add(
-        "open"
-    );
+    wrapper.classList.add("open");
 
 }
 
 
-/* ALL DAYS */
+/* =========================
+   ALL DAYS
+========================= */
 
 function renderAllDays() {
 
@@ -1098,140 +1029,113 @@ function renderAllDays() {
     history.innerHTML = "";
 
 
-    getLast7Days()
-        .forEach(day => {
+    getLast7Days().forEach(day => {
 
-            const sessions =
-                getSessions(day);
+        const sessions =
+            getSessions(day);
 
 
-            const wrapper =
-                document.createElement(
-                    "div"
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.className =
+            "day";
+
+
+        const summary =
+            document.createElement("div");
+
+        summary.className =
+            "day-summary";
+
+
+        const dayTitle =
+            day === getDayKey(new Date())
+            ? "Today"
+            : formatDay(day);
+
+
+        summary.innerHTML =
+
+            '<div>' +
+
+                '<div class="day-name">' +
+                    dayTitle +
+                '</div>' +
+
+                '<div class="day-date">' +
+                    formatDay(day) +
+                '</div>' +
+
+            '</div>' +
+
+            '<div class="day-total">' +
+                formatDuration(
+                    getDayTotal(day)
+                ) +
+            '</div>' +
+
+            '<div class="day-sessions">' +
+
+                sessions.length +
+
+                (
+                    sessions.length === 1
+                    ? " session"
+                    : " sessions"
+                ) +
+
+                '<span class="arrow">▼</span>' +
+
+            '</div>';
+
+
+        const details =
+            document.createElement("div");
+
+        details.className =
+            "day-details";
+
+
+        renderSessions(
+            details,
+            sessions
+        );
+
+
+        summary.addEventListener(
+            "click",
+            function() {
+
+                wrapper.classList.toggle(
+                    "open"
                 );
 
-            wrapper.className =
-                "day";
+            }
+        );
 
 
-            const summary =
-                document.createElement(
-                    "div"
-                );
+        wrapper.appendChild(summary);
+        wrapper.appendChild(details);
 
-            summary.className =
-                "day-summary";
+        history.appendChild(wrapper);
 
-
-            summary.innerHTML = `
-
-                <div>
-
-                    <div class="day-name">
-
-                        ${
-                            day ===
-                            getDayKey(new Date())
-                            ? "Today"
-                            : formatDay(day)
-                        }
-
-                    </div>
-
-                    <div class="day-date">
-
-                        ${formatDay(day)}
-
-                    </div>
-
-                </div>
-
-
-                <div class="day-total">
-
-                    ${formatDuration(
-                        getDayTotal(day)
-                    )}
-
-                </div>
-
-
-                <div class="day-sessions">
-
-                    ${sessions.length}
-
-                    ${
-                        sessions.length === 1
-                        ? "session"
-                        : "sessions"
-                    }
-
-                    <span class="arrow">
-                        ▼
-                    </span>
-
-                </div>
-
-            `;
-
-
-            const details =
-                document.createElement(
-                    "div"
-                );
-
-            details.className =
-                "day-details";
-
-
-            renderSessions(
-                details,
-                sessions
-            );
-
-
-            /* ONLY CLICKED DAY OPENS */
-
-            summary.addEventListener(
-                "click",
-                () => {
-
-                    wrapper.classList.toggle(
-                        "open"
-                    );
-
-                }
-            );
-
-
-            wrapper.appendChild(
-                summary
-            );
-
-            wrapper.appendChild(
-                details
-            );
-
-            history.appendChild(
-                wrapper
-            );
-
-        });
+    });
 
 }
 
 
-/* HISTORY */
+/* =========================
+   HISTORY
+========================= */
 
 function renderHistory() {
 
-    if (!data)
+    if (!data) {
         return;
+    }
 
-
-    if (
-        selectedDay === "all"
-    ) {
+    if (selectedDay === "all") {
 
         renderAllDays();
 
@@ -1251,18 +1155,9 @@ function renderHistory() {
 }
 
 
-/* RENDER EVERYTHING */
-
-function render() {
-
-    renderTop();
-
-    renderHistory();
-
-}
-
-
-/* LOAD JSON */
+/* =========================
+   LOAD DATA
+========================= */
 
 async function loadData() {
 
@@ -1289,24 +1184,31 @@ async function loadData() {
         }
 
 
-        data =
+        const newData =
             await response.json();
+
+
+        data =
+            newData;
 
 
         $("error").style.display =
             "none";
 
 
-        render();
+        populateSelector();
 
-    }
-    catch (error) {
+        renderTop();
 
-        console.error(error);
+        renderHistory();
 
 
-        $("error").style.display =
-            "block";
+    } catch (error) {
+
+        console.error(
+            "Dashboard error:",
+            error
+        );
 
 
         $("error").textContent =
@@ -1314,15 +1216,17 @@ async function loadData() {
             error.message;
 
 
-        $("status").textContent =
-            "Data Error";
+        $("error").style.display =
+            "block";
 
     }
 
 }
 
 
-/* SELECTOR CHANGE */
+/* =========================
+   SELECTOR EVENT
+========================= */
 
 $("daySelect").addEventListener(
     "change",
@@ -1337,39 +1241,37 @@ $("daySelect").addEventListener(
 );
 
 
-/* INITIALIZE */
-
-populateSelector();
+/* =========================
+   INITIAL LOAD
+========================= */
 
 loadData();
 
 
-/* REFRESH FROM GITHUB EVERY 60 SEC */
+/* =========================
+   REFRESH EVERY 2 SECONDS
+========================= */
 
 setInterval(
     loadData,
-    60000
+    2000
 );
 
 
-/* UPDATE LIVE ONLINE DURATION */
+/* =========================
+   UPDATE LIVE DURATION
+   EVERY SECOND
+========================= */
 
 setInterval(
-    () => {
+    function() {
 
-        if (data) {
-
-            renderTop();
-
-            if (
-                selectedDay !== "all"
-            ) {
-
-                renderHistory();
-
-            }
-
+        if (!data) {
+            return;
         }
+
+        renderTop();
+        renderHistory();
 
     },
     1000
