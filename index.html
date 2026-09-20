@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telegram Activity</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #07090d;
+    --card: #10141b;
+    --card-hover: #151b23;
+    --border: #222a35;
+    --text: #f2f4f7;
+    --muted: #8993a1;
+    --blue: #2ea6ff;
+    --green: #27e27b;
+    --red: #ff4f5c;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top, #182331 0%, #07090d 45%);
+    color: var(--text);
+    font-family: Arial, "Segoe UI", sans-serif;
+}
+
+.container {
+    width: min(1000px, calc(100% - 28px));
+    margin: auto;
+    padding: 38px 0 60px;
+}
+
+/* HEADER */
+
+.header {
+    margin-bottom: 25px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 38px;
+    letter-spacing: -1px;
+}
+
+.header p {
+    margin: 7px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* ERROR */
+
+.error {
+    display: none;
+    background: rgba(255, 79, 92, .12);
+    border: 1px solid rgba(255, 79, 92, .35);
+    color: #ff858d;
+    padding: 13px 15px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+}
+
+/* CURRENT STATUS */
+
+.status-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    background: linear-gradient(135deg, #121922, #0d1117);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 22px;
+    margin-bottom: 15px;
+}
+
+.status-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.status-dot {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #777;
+}
+
+.status-dot.online {
+    background: var(--green);
+    box-shadow: 0 0 16px rgba(39,226,123,.7);
+}
+
+.status-dot.offline {
+    background: var(--red);
+    box-shadow: 0 0 12px rgba(255,79,92,.35);
+}
+
+.status-label {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.status-value {
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 3px;
+}
+
+.status-updated {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* STATS */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.stat {
+    background: rgba(16,20,27,.95);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 17px;
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+    margin-bottom: 10px;
+}
+
+.stat-value {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+/* SECTION */
+
+.section {
+    margin-top: 27px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 13px;
+}
+
+/* SELECTOR */
+
+select {
+    width: 100%;
+    background: #10141b;
+    color: white;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 15px;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+}
+
+select:focus {
+    border-color: #36536f;
+}
+
+/* HISTORY */
+
+.history {
+    margin-top: 13px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    background: #0d1117;
+}
+
+/* DAY */
+
+.day {
+    border-bottom: 1px solid #202631;
+}
+
+.day:last-child {
+    border-bottom: none;
+}
+
+.day-summary {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 18px;
+    padding: 17px 19px;
+    cursor: pointer;
+    transition: background .15s ease;
+}
+
+.day-summary:hover {
+    background: var(--card-hover);
+}
+
+.day-name {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.day-date {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+.day-total {
+    color: var(--blue);
+    font-weight: 700;
+    font-size: 13px;
+    text-align: right;
+}
+
+.day-sessions {
+    color: var(--muted);
+    font-size: 12px;
+    min-width: 75px;
+    text-align: right;
+}
+
+.arrow {
+    display: inline-block;
+    margin-left: 7px;
+    font-size: 10px;
+    transition: transform .2s ease;
+}
+
+.day.open .arrow {
+    transform: rotate(180deg);
+}
+
+/* DETAILS */
+
+.day-details {
+    display: none;
+    padding: 0 19px 18px;
+    background: #0a0e13;
+}
+
+.day.open .day-details {
+    display: block;
+}
+
+.session {
+    padding: 14px 0;
+    border-top: 1px solid #1c232d;
+}
+
+.session:first-child {
+    border-top: none;
+}
+
+.session-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.session-time {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.session-duration {
+    color: var(--blue);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.session-end {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.empty {
+    padding: 23px 18px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* FOOTER */
+
+.footer {
+    text-align: center;
+    color: #59616d;
+    font-size: 11px;
+    margin-top: 35px;
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+    .container {
+        width: calc(100% - 18px);
+        padding-top: 25px;
+    }
+
+    .header h1 {
+        font-size: 30px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .status-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .status-updated {
+        margin-left: 27px;
+    }
+}
+
+@media (max-width: 430px) {
+
+    .day-summary {
+        grid-template-columns: 1fr auto;
+        gap: 7px;
+    }
+
+    .day-total {
+        text-align: left;
+    }
+
+    .day-sessions {
+        grid-column: 2;
+        grid-row: 1;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Telegram Activity</h1>
+        <p>Activity monitoring dashboard</p>
+    </div>
+
+    <div id="error" class="error"></div>
+
+    <!-- CURRENT STATUS -->
+
+    <div class="status-card">
+
+        <div class="status-left">
+
+            <div id="statusDot" class="status-dot"></div>
+
+            <div>
+                <div class="status-label">
+                    Current Status
+                </div>
+
+                <div id="status" class="status-value">
+                    Loading...
+                </div>
+            </div>
+
+        </div>
+
+        <div id="updatedAt" class="status-updated">
+            Updating...
+        </div>
+
+    </div>
+
+
+    <!-- STAT CARDS -->
+
+    <div class="stats">
+
+        <div class="stat">
+            <div class="stat-label">
+                Online Since
+            </div>
+
+            <div id="onlineSince" class="stat-value">
+                —
+            </div>
+        </div>
+
+
+        <div class="stat">
+            <div class="stat-label">
+                Last Seen
+            </div>
+
+            <div id="lastSeen" class="stat-value">
+                —
+            </div>
+        </div>
+
+
+        <div class="stat">
+            <div class="stat-label">
+                Today Online
+            </div>
+
+            <div id="todayTotal" class="stat-value">
+                0s
+            </div>
+        </div>
+
+
+        <div class="stat">
+            <div class="stat-label">
+                Sessions
+            </div>
+
+            <div id="sessionCount" class="stat-value">
+                0
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ACTIVITY HISTORY -->
+
+    <div class="section">
+
+        <div class="section-title">
+            Activity History
+        </div>
+
+        <select id="daySelect"></select>
+
+    </div>
+
+
+    <div id="history" class="history"></div>
+
+
+    <div class="footer">
+        Automatically refreshes every 60 seconds
+    </div>
+
+</div>
+
+
+<script>
+
+/*
+==================================================
+LIVE DATA SOURCE
+==================================================
+*/
+
+const DATA_URL =
+"https://dark-shadowblade.github.io/tad/activity_7days.json";
+
+const TIMEZONE = "Asia/Kolkata";
+
+let data = null;
+let selectedDay = "today";
+
+
+/* HELPER */
+
+function $(id) {
+    return document.getElementById(id);
+}
+
+
+/* DATE FUNCTIONS */
+
+function getDayKey(date) {
+
+    return new Intl.DateTimeFormat("en-CA", {
+        timeZone: TIMEZONE
+    }).format(date);
+
+}
+
+
+function formatDateTime(iso) {
+
+    if (!iso) return "—";
+
+    return new Intl.DateTimeFormat("en-IN", {
+        timeZone: TIMEZONE,
+        dateStyle: "medium",
+        timeStyle: "short"
+    }).format(new Date(iso));
+
+}
+
+
+function formatTime(iso) {
+
+    if (!iso) return "—";
+
+    return new Intl.DateTimeFormat("en-IN", {
+        timeZone: TIMEZONE,
+        hour: "numeric",
+        minute: "2-digit"
+    }).format(new Date(iso));
+
+}
+
+
+function formatDay(day) {
+
+    const d =
+        new Date(day + "T00:00:00");
+
+    return new Intl.DateTimeFormat("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    }).format(d);
+
+}
+
+
+function getLast7Days() {
+
+    const days = [];
+
+    const now = new Date();
+
+    for (let i = 0; i < 7; i++) {
+
+        const d = new Date(now);
+
+        d.setDate(
+            d.getDate() - i
+        );
+
+        days.push(
+            getDayKey(d)
+        );
+
+    }
+
+    return days;
+
+}
+
+
+/* DURATION */
+
+function sessionDuration(session) {
+
+    const start =
+        new Date(session.start);
+
+    const end =
+        session.end
+        ? new Date(session.end)
+        : new Date();
+
+    return Math.max(
+        0,
+        (end - start) / 1000
+    );
+
+}
+
+
+function formatDuration(seconds) {
+
+    seconds =
+        Math.max(
+            0,
+            Math.floor(seconds)
+        );
+
+    const days =
+        Math.floor(seconds / 86400);
+
+    seconds %= 86400;
+
+    const hours =
+        Math.floor(seconds / 3600);
+
+    seconds %= 3600;
+
+    const minutes =
+        Math.floor(seconds / 60);
+
+    seconds %= 60;
+
+    const parts = [];
+
+    if (days)
+        parts.push(days + "d");
+
+    if (hours)
+        parts.push(hours + "h");
+
+    if (minutes)
+        parts.push(minutes + "m");
+
+    if (!parts.length || seconds)
+        parts.push(seconds + "s");
+
+    return parts.join(" ");
+
+}
+
+
+/* GET SESSIONS FOR A DAY */
+
+function getSessions(day) {
+
+    if (!data)
+        return [];
+
+    return (data.sessions || [])
+        .filter(session => {
+
+            return getDayKey(
+                new Date(session.start)
+            ) === day;
+
+        });
+
+}
+
+
+/* DAY TOTAL */
+
+function getDayTotal(day) {
+
+    if (!data)
+        return 0;
+
+    let total = 0;
+
+
+    for (
+        const session
+        of getSessions(day)
+    ) {
+
+        total +=
+            sessionDuration(session);
+
+    }
+
+
+    /* CURRENT ONLINE SESSION */
+
+    if (data.current_online_since) {
+
+        if (
+            getDayKey(
+                new Date(
+                    data.current_online_since
+                )
+            ) === day
+        ) {
+
+            total +=
+                (
+                    Date.now() -
+                    new Date(
+                        data.current_online_since
+                    ).getTime()
+                ) / 1000;
+
+        }
+
+    }
+
+
+    return total;
+
+}
+
+
+/* TODAY TOTAL */
+
+function getTodayTotal() {
+
+    return getDayTotal(
+        getDayKey(new Date())
+    );
+
+}
+
+
+/* TOP STATUS */
+
+function renderTop() {
+
+    if (!data)
+        return;
+
+
+    const status =
+        data.last_status ||
+        (
+            data.current_online_since
+            ? "ONLINE"
+            : "OFFLINE"
+        );
+
+
+    $("status").textContent =
+        status;
+
+
+    const dot =
+        $("statusDot");
+
+    dot.className =
+        "status-dot";
+
+
+    if (status === "ONLINE") {
+
+        dot.classList.add("online");
+
+    } else {
+
+        dot.classList.add("offline");
+
+    }
+
+
+    $("onlineSince").textContent =
+        data.current_online_since
+        ? formatDateTime(
+            data.current_online_since
+          )
+        : "—";
+
+
+    $("lastSeen").textContent =
+        data.last_seen
+        ? formatDateTime(
+            data.last_seen
+          )
+        : "—";
+
+
+    $("todayTotal").textContent =
+        formatDuration(
+            getTodayTotal()
+        );
+
+
+    $("sessionCount").textContent =
+        (
+            data.sessions || []
+        ).length;
+
+
+    $("updatedAt").textContent =
+        data.updated_at
+        ? "Updated " +
+          formatDateTime(
+              data.updated_at
+          )
+        : "Waiting for update";
+
+}
+
+
+/* SELECTOR */
+
+function populateSelector() {
+
+    const select =
+        $("daySelect");
+
+    select.innerHTML = "";
+
+
+    const today =
+        getDayKey(new Date());
+
+
+    /* TODAY */
+
+    const todayOption =
+        document.createElement("option");
+
+    todayOption.value =
+        "today";
+
+    todayOption.textContent =
+        "Today — " +
+        formatDay(today);
+
+    select.appendChild(
+        todayOption
+    );
+
+
+    /* OTHER DAYS */
+
+    getLast7Days()
+        .filter(
+            day => day !== today
+        )
+        .forEach(day => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                day;
+
+            option.textContent =
+                formatDay(day);
+
+            select.appendChild(
+                option
+            );
+
+        });
+
+
+    /* ALL 7 DAYS */
+
+    const all =
+        document.createElement(
+            "option"
+        );
+
+    all.value =
+        "all";
+
+    all.textContent =
+        "All 7 Days";
+
+    select.appendChild(all);
+
+
+    select.value =
+        selectedDay;
+
+}
+
+
+/* CREATE SESSION HTML */
+
+function renderSessions(
+    container,
+    sessions
+) {
+
+    if (!sessions.length) {
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+        empty.className =
+            "empty";
+
+        empty.textContent =
+            "No sessions recorded.";
+
+        container.appendChild(
+            empty
+        );
+
+        return;
+
+    }
+
+
+    sessions
+        .slice()
+        .reverse()
+        .forEach(session => {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.className =
+                "session";
+
+
+            div.innerHTML = `
+
+                <div class="session-main">
+
+                    <div class="session-time">
+
+                        ${formatTime(
+                            session.start
+                        )}
+
+                        →
+
+                        ${
+                            session.end
+                            ? formatTime(
+                                session.end
+                              )
+                            : "Now"
+                        }
+
+                    </div>
+
+                    <div class="session-duration">
+
+                        ${formatDuration(
+                            sessionDuration(
+                                session
+                            )
+                        )}
+
+                    </div>
+
+                </div>
+
+                <div class="session-end">
+
+                    ${
+                        session.end
+                        ? "Ended " +
+                          formatDateTime(
+                              session.end
+                          )
+                        : "Currently online"
+                    }
+
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                div
+            );
+
+        });
+
+}
+
+
+/* SINGLE DAY */
+
+function renderSingleDay(day) {
+
+    const history =
+        $("history");
+
+    history.innerHTML = "";
+
+
+    const sessions =
+        getSessions(day);
+
+
+    const wrapper =
+        document.createElement(
+            "div"
+        );
+
+    wrapper.className =
+        "day";
+
+
+    const summary =
+        document.createElement(
+            "div"
+        );
+
+    summary.className =
+        "day-summary";
+
+
+    summary.innerHTML = `
+
+        <div>
+
+            <div class="day-name">
+
+                ${
+                    day ===
+                    getDayKey(new Date())
+                    ? "Today"
+                    : formatDay(day)
+                }
+
+            </div>
+
+            <div class="day-date">
+
+                ${formatDay(day)}
+
+            </div>
+
+        </div>
+
+
+        <div class="day-total">
+
+            ${formatDuration(
+                getDayTotal(day)
+            )}
+
+        </div>
+
+
+        <div class="day-sessions">
+
+            ${sessions.length}
+            ${
+                sessions.length === 1
+                ? "session"
+                : "sessions"
+            }
+
+        </div>
+
+    `;
+
+
+    const details =
+        document.createElement(
+            "div"
+        );
+
+    details.className =
+        "day-details";
+
+
+    renderSessions(
+        details,
+        sessions
+    );
+
+
+    wrapper.appendChild(
+        summary
+    );
+
+    wrapper.appendChild(
+        details
+    );
+
+    history.appendChild(
+        wrapper
+    );
+
+
+    /* OPEN SELECTED DAY */
+
+    wrapper.classList.add(
+        "open"
+    );
+
+}
+
+
+/* ALL DAYS */
+
+function renderAllDays() {
+
+    const history =
+        $("history");
+
+    history.innerHTML = "";
+
+
+    getLast7Days()
+        .forEach(day => {
+
+            const sessions =
+                getSessions(day);
+
+
+            const wrapper =
+                document.createElement(
+                    "div"
+                );
+
+            wrapper.className =
+                "day";
+
+
+            const summary =
+                document.createElement(
+                    "div"
+                );
+
+            summary.className =
+                "day-summary";
+
+
+            summary.innerHTML = `
+
+                <div>
+
+                    <div class="day-name">
+
+                        ${
+                            day ===
+                            getDayKey(new Date())
+                            ? "Today"
+                            : formatDay(day)
+                        }
+
+                    </div>
+
+                    <div class="day-date">
+
+                        ${formatDay(day)}
+
+                    </div>
+
+                </div>
+
+
+                <div class="day-total">
+
+                    ${formatDuration(
+                        getDayTotal(day)
+                    )}
+
+                </div>
+
+
+                <div class="day-sessions">
+
+                    ${sessions.length}
+
+                    ${
+                        sessions.length === 1
+                        ? "session"
+                        : "sessions"
+                    }
+
+                    <span class="arrow">
+                        ▼
+                    </span>
+
+                </div>
+
+            `;
+
+
+            const details =
+                document.createElement(
+                    "div"
+                );
+
+            details.className =
+                "day-details";
+
+
+            renderSessions(
+                details,
+                sessions
+            );
+
+
+            /* ONLY CLICKED DAY OPENS */
+
+            summary.addEventListener(
+                "click",
+                () => {
+
+                    wrapper.classList.toggle(
+                        "open"
+                    );
+
+                }
+            );
+
+
+            wrapper.appendChild(
+                summary
+            );
+
+            wrapper.appendChild(
+                details
+            );
+
+            history.appendChild(
+                wrapper
+            );
+
+        });
+
+}
+
+
+/* HISTORY */
+
+function renderHistory() {
+
+    if (!data)
+        return;
+
+
+    if (
+        selectedDay === "all"
+    ) {
+
+        renderAllDays();
+
+        return;
+
+    }
+
+
+    const day =
+        selectedDay === "today"
+        ? getDayKey(new Date())
+        : selectedDay;
+
+
+    renderSingleDay(day);
+
+}
+
+
+/* RENDER EVERYTHING */
+
+function render() {
+
+    renderTop();
+
+    renderHistory();
+
+}
+
+
+/* LOAD JSON */
+
+async function loadData() {
+
+    try {
+
+        const response =
+            await fetch(
+                DATA_URL +
+                "?t=" +
+                Date.now(),
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
+
+        }
+
+
+        data =
+            await response.json();
+
+
+        $("error").style.display =
+            "none";
+
+
+        render();
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+
+        $("error").style.display =
+            "block";
+
+
+        $("error").textContent =
+            "Unable to load activity data: " +
+            error.message;
+
+
+        $("status").textContent =
+            "Data Error";
+
+    }
+
+}
+
+
+/* SELECTOR CHANGE */
+
+$("daySelect").addEventListener(
+    "change",
+    function() {
+
+        selectedDay =
+            this.value;
+
+        renderHistory();
+
+    }
+);
+
+
+/* INITIALIZE */
+
+populateSelector();
+
+loadData();
+
+
+/* REFRESH FROM GITHUB EVERY 60 SEC */
+
+setInterval(
+    loadData,
+    60000
+);
+
+
+/* UPDATE LIVE ONLINE DURATION */
+
+setInterval(
+    () => {
+
+        if (data) {
+
+            renderTop();
+
+            if (
+                selectedDay !== "all"
+            ) {
+
+                renderHistory();
+
+            }
+
+        }
+
+    },
+    1000
+);
+
+</script>
+
+</body>
+</html>
