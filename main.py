@@ -33,7 +33,7 @@ GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
 DATA_REPO = "dark-shadowblade/tad"
 DATA_FILE = "activity_7days.json"
 
-CHECK_INTERVAL = 60
+CHECK_INTERVAL = 2
 
 IST = timezone(timedelta(hours=5, minutes=30))
 
@@ -504,7 +504,7 @@ async def main():
     )
 
     print(
-        "Checking every 60 seconds...",
+        "Checking every 02 seconds...",
         flush=True
     )
 
