@@ -126,6 +126,8 @@
       box-shadow: var(--shadow);
     }
     .status-panel {
+      position: relative;
+      z-index: 3;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -362,18 +364,18 @@
 
     /* Small 3D side-scrolling platform mascot */
     .mascot {
-      position: fixed; z-index: 40; left: 20px; top: 220px;
+      position: fixed; z-index: 40; left: calc(50% - 30px); top: calc(50% - 41px);
       width: 60px; height: 82px; pointer-events: none;
       transition: left .08s linear, top .08s linear;
     }
     .mascot-bubble {
-      position:absolute; left:50%; top:-29px; transform:translateX(-50%) translateY(5px);
-      width:max-content; max-width:150px; padding:6px 9px; border-radius:10px 10px 10px 3px;
+      position:fixed; left:50vw; top:8px; transform:translate(-50%,5px);
+      width:max-content; max-width:min(260px, calc(100vw - 24px)); padding:7px 10px; border-radius:10px 10px 10px 3px;
       border:1px solid #8dc5ff55; color:#f6fbff; background:linear-gradient(145deg,#24466e,#132843);
       box-shadow:0 5px 16px #0007; font-size:10px; font-weight:750; line-height:1.3;
       opacity:0; transition:opacity .2s,transform .2s;
     }
-    .mascot.show-message .mascot-bubble { opacity:1; transform:translateX(-50%) translateY(0); }
+    .mascot.show-message .mascot-bubble { opacity:1; transform:translate(-50%,0); }
     .bot3d { position:absolute; left:0; bottom:0; width:104px; height:138px; transform:scale(.56); transform-origin:bottom left; }
     .bot-shadow { position:absolute; width:66px; height:13px; left:19px; bottom:3px; border-radius:50%; background:#02081788; filter:blur(5px); }
     .bot-head {
@@ -405,13 +407,39 @@
     .mascot.climbing .bot-arm.right { animation:bot-climb .3s ease-in-out infinite alternate-reverse; }
     .mascot.waving .bot-arm.right { animation:bot-wave .28s ease-in-out infinite alternate; }
     .mascot.sad .bot-mouth { width:12px; height:6px; border-bottom:0; border-top:2px solid #263044; top:44px; }
+    /* Opening scene: only the sleepy head peeks over the status card. */
+    .mascot.intro-sleeping {
+      z-index:2;
+      height:38px;
+      /* Force the sleeping head to the true viewport centre, overriding any
+         inline platform coordinates set by the movement routine. */
+      left:50vw !important;
+      top:50vh !important;
+      transform:translate(-50%,-50%) !important;
+    }
+    .mascot.intro-sleeping .bot3d { transform:scale(.56); transform-origin:top left; }
+    .mascot.intro-sleeping .bot-body,
+    .mascot.intro-sleeping .bot-arm,
+    .mascot.intro-sleeping .bot-leg,
+    .mascot.intro-sleeping .bot-antenna { opacity:0; }
+    .mascot.intro-sleeping .bot-eye { transform:scaleY(.12); transform-origin:center; }
+    .mascot.intro-sleeping .bot-mouth { opacity:.35; }
+    .mascot.intro-waking { z-index:40; }
+    .mascot.intro-waking .bot-eye { animation:intro-eyes-open .35s ease-out both; }
+    .mascot.intro-waking .bot-antenna { opacity:1; animation:intro-pop .35s ease-out both; }
+    .mascot.intro-waving .bot-arm.right { animation:intro-fast-wave .13s ease-in-out infinite alternate; }
+    .mascot.intro-waving .bot-arm.left { animation:intro-excited .22s ease-in-out infinite alternate; }
+    @keyframes intro-eyes-open { from{transform:scaleY(.12)} to{transform:scaleY(1)} }
+    @keyframes intro-pop { from{transform:translateY(8px) scale(.6)} to{transform:translateY(0) scale(1)} }
+    @keyframes intro-fast-wave { from{transform:rotate(-48deg)} to{transform:rotate(-145deg)} }
+    @keyframes intro-excited { from{transform:rotate(25deg)} to{transform:rotate(-35deg)} }
     @keyframes bot-step { from{transform:rotate(-32deg)} to{transform:rotate(32deg)} }
     @keyframes bot-swing { from{transform:rotate(-28deg)} to{transform:rotate(28deg)} }
     @keyframes bot-climb { from{transform:rotate(-65deg)} to{transform:rotate(35deg)} }
     @keyframes bot-wave { from{transform:rotate(-55deg)} to{transform:rotate(-135deg)} }
     @keyframes bot-tuck { from{transform:rotate(-18deg)} to{transform:rotate(24deg)} }
     @keyframes bot-flail { from{transform:rotate(-55deg)} to{transform:rotate(55deg)} }
-    @media(max-width:520px){.mascot-bubble{max-width:125px;font-size:9px}}
+    @media(max-width:520px){.mascot-bubble{max-width:min(230px,calc(100vw - 20px));font-size:10px}}
     @media(prefers-reduced-motion:reduce){.mascot,.mascot *{animation:none!important;transition:none!important}}
     @media (max-width: 760px) {
       body { padding: 21px 14px 32px; }
@@ -454,609 +482,4 @@
 </head>
 <body>
   <main class="container">
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark" aria-hidden="true">T</div>
-        <div>
-          <h1>Telegram Activity</h1>
-          <p class="subtitle">Activity monitoring dashboard</p>
-        </div>
-      </div>
-      <div class="top-actions">
-        <div class="live-pill">Live dashboard</div>
-        <a class="top-contact"
-           href="https://t.me/Never_again098"
-           target="_blank"
-           rel="noopener noreferrer"
-           aria-label="Contact Abhi on Telegram">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.7 4.35 18.6 19c-.23 1.04-.84 1.3-1.7.81l-4.7-3.47-2.27 2.18c-.25.25-.46.46-.94.46l.34-4.78 8.7-7.86c.38-.34-.08-.53-.59-.19L6.69 13.1 2.1 11.67c-1-.31-1.02-1 .21-1.49L20.25 3.2c.83-.3 1.56.2 1.45 1.15Z"/></svg>
-          Contact Abhi
-        </a>
-      </div>
-    </header>
-
-    <div id="error" class="error" role="alert" aria-live="polite"></div>
-
-    <section class="panel status-panel" aria-label="Current Telegram status">
-      <div class="status-main">
-        <span id="statusDot" class="status-orb" aria-hidden="true"></span>
-        <div>
-          <div class="eyebrow">Current status</div>
-          <div id="status" class="status-value">Loading…</div>
-        </div>
-      </div>
-      <div id="updatedAt" class="updated">Connecting to activity data…</div>
-    </section>
-
-
-    <div id="mascot" class="mascot sad" aria-live="polite" aria-label="Abhi's cheerful little companion">
-      <div id="mascotBubble" class="mascot-bubble">Abhi says hii, sunshine! 👋</div>
-      <div class="bot3d" aria-hidden="true">
-        <div class="bot-shadow"></div>
-        <div class="bot-antenna"></div>
-        <div class="bot-head"><div class="bot-face">
-          <span class="bot-eye left"></span><span class="bot-eye right"></span><span class="bot-mouth"></span>
-        </div></div>
-        <div class="bot-arm left"></div><div class="bot-arm right"></div>
-        <div class="bot-body"><span class="bot-core"></span></div>
-        <div class="bot-leg left"></div><div class="bot-leg right"></div>
-      </div>
-    </div>
-    
-    <section class="stats" aria-label="Activity summary">
-      <article class="stat">
-        <div class="stat-top"><span class="eyebrow">Connection</span><span class="stat-icon" aria-hidden="true">◷</span></div>
-        <div class="stat-label">Online since</div>
-        <div id="onlineSince" class="stat-value">—</div>
-        <div class="stat-hint">Current active session</div>
-      </article>
-      <article class="stat">
-        <div class="stat-top"><span class="eyebrow">Activity</span><span class="stat-icon" aria-hidden="true">⌁</span></div>
-        <div class="stat-label">Last seen</div>
-        <div id="lastSeen" class="stat-value">—</div>
-        <div class="stat-hint">Most recent recorded activity</div>
-      </article>
-      <article class="stat">
-        <div class="stat-top"><span class="eyebrow">Today</span><span class="stat-icon" aria-hidden="true">◴</span></div>
-        <div class="stat-label">Today online</div>
-        <div id="todayTotal" class="stat-value">0s</div>
-        <div class="stat-hint">Total time online today</div>
-      </article>
-      <article class="stat">
-        <div class="stat-top"><span class="eyebrow">Count</span><span class="stat-icon" aria-hidden="true">▤</span></div>
-        <div class="stat-label">Sessions today</div>
-        <div id="sessionCount" class="stat-value">0</div>
-        <div class="stat-hint">Recorded connection sessions</div>
-      </article>
-    </section>
-
-    <section aria-labelledby="historyTitle">
-      <div class="section-heading">
-        <div>
-          <h2 id="historyTitle">Activity history</h2>
-          <p>Review recorded online sessions from the last seven days.</p>
-        </div>
-      </div>
-      <div class="history-toolbar">
-        <div class="select-wrap">
-          <select id="daySelect" aria-label="Choose activity date"></select>
-        </div>
-      </div>
-      <div id="history" class="history" aria-live="polite">
-        <div class="empty">Loading activity history…</div>
-      </div>
-    </section>
-
-    <section class="contact-card" aria-label="Restart monitoring contact">
-      <div class="contact-copy">
-        <h2 class="contact-title">Need help?</h2>
-        <p class="contact-message">Contact Abhi on Telegram for any problem.</p>
-      </div>
-      <a class="telegram-link"
-         href="https://t.me/Never_again098"
-         target="_blank"
-         rel="noopener noreferrer"
-         aria-label="Contact me on Telegram at Never_again098">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.7 4.35 18.6 19c-.23 1.04-.84 1.3-1.7.81l-4.7-3.47-2.27 2.18c-.25.25-.46.46-.94.46l.34-4.78 8.7-7.86c.38-.34-.08-.53-.59-.19L6.69 13.1 2.1 11.67c-1-.31-1.02-1 .21-1.49L20.25 3.2c.83-.3 1.56.2 1.45 1.15Z"/></svg>
-        Message on Telegram
-      </a>
-    </section>
-
-    <footer class="footer">
-      <span>Times are displayed in India Standard Time (IST).</span>
-      <span class="refresh-indicator">Auto-refresh every 2 seconds</span>
-    </footer>
-  </main>
-
-  <script>
-    "use strict";
-
-    // Keep this URL aligned with the JSON file produced by your monitoring workflow.
-    const DATA_URL = "https://dark-shadowblade.github.io/tad/activity_7days.json";
-    const TIMEZONE = "Asia/Kolkata";
-    const REFRESH_INTERVAL = 2000;
-
-    let data = null;
-    let selectedDay = "today";
-    let refreshTimer = null;
-
-    const $ = (id) => document.getElementById(id);
-
-    function validDate(value) {
-      if (!value) return null;
-      const date = new Date(value);
-      return Number.isNaN(date.getTime()) ? null : date;
-    }
-
-    function getDayKey(date) {
-      const parts = new Intl.DateTimeFormat("en-CA", {
-        timeZone: TIMEZONE, year: "numeric", month: "2-digit", day: "2-digit"
-      }).formatToParts(date);
-      const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
-      return `${values.year}-${values.month}-${values.day}`;
-    }
-
-    // India has no daylight-saving changes; IST is UTC+05:30.
-    function dayBounds(dayKey) {
-      const [year, month, day] = dayKey.split("-").map(Number);
-      const start = Date.UTC(year, month - 1, day) - (5.5 * 60 * 60 * 1000);
-      return { start, end: start + 86400 * 1000 };
-    }
-
-    function formatDateTime(value) {
-      const date = validDate(value);
-      if (!date) return "—";
-      return new Intl.DateTimeFormat("en-IN", {
-        timeZone: TIMEZONE, dateStyle: "medium", timeStyle: "short"
-      }).format(date);
-    }
-
-    function formatTime(value) {
-      const date = validDate(value);
-      if (!date) return "—";
-      return new Intl.DateTimeFormat("en-IN", {
-        timeZone: TIMEZONE, hour: "numeric", minute: "2-digit", second: "2-digit"
-      }).format(date);
-    }
-
-    function formatDay(dayKey) {
-      const { start } = dayBounds(dayKey);
-      return new Intl.DateTimeFormat("en-IN", {
-        timeZone: TIMEZONE, day: "2-digit", month: "short", year: "numeric"
-      }).format(new Date(start));
-    }
-
-    function getLast7Days() {
-      const today = getDayKey(new Date());
-      const { start } = dayBounds(today);
-      return Array.from({ length: 7 }, (_, index) =>
-        getDayKey(new Date(start - index * 86400 * 1000))
-      );
-    }
-
-    function formatDuration(totalSeconds) {
-      let seconds = Math.max(0, Math.floor(Number(totalSeconds) || 0));
-      const days = Math.floor(seconds / 86400);
-      seconds %= 86400;
-      const hours = Math.floor(seconds / 3600);
-      seconds %= 3600;
-      const minutes = Math.floor(seconds / 60);
-      seconds %= 60;
-
-      const parts = [];
-      if (days) parts.push(`${days}d`);
-      if (hours) parts.push(`${hours}h`);
-      if (minutes) parts.push(`${minutes}m`);
-      if (!parts.length || seconds) parts.push(`${seconds}s`);
-      return parts.join(" ");
-    }
-
-    function getAllSessions() {
-      return Array.isArray(data?.sessions) ? data.sessions : [];
-    }
-
-    function getSessions(dayKey) {
-      return getAllSessions().filter(session => {
-        const start = validDate(session.start);
-        return start && getDayKey(start) === dayKey;
-      });
-    }
-
-    function sessionDuration(session) {
-      const start = validDate(session.start);
-      if (!start) return 0;
-      const end = validDate(session.end) || new Date();
-      return Math.max(0, (end.getTime() - start.getTime()) / 1000);
-    }
-
-    // Sum only the portion of each session that falls inside the selected IST day.
-    // If the feed also contains an open session, current_online_since is used as
-    // the authoritative live-session start to avoid counting that session twice.
-    function getDayTotal(dayKey) {
-      if (!data) return 0;
-      const bounds = dayBounds(dayKey);
-      const currentStart = validDate(data.current_online_since);
-      let total = 0;
-
-      for (const session of getAllSessions()) {
-        const start = validDate(session.start);
-        if (!start) continue;
-
-        const isOpen = !session.end;
-        if (isOpen && currentStart && start.getTime() === currentStart.getTime()) {
-          continue;
-        }
-
-        const end = validDate(session.end) || new Date();
-        const overlapStart = Math.max(start.getTime(), bounds.start);
-        const overlapEnd = Math.min(end.getTime(), bounds.end);
-        if (overlapEnd > overlapStart) {
-          total += (overlapEnd - overlapStart) / 1000;
-        }
-      }
-
-      if (currentStart) {
-        const overlapStart = Math.max(currentStart.getTime(), bounds.start);
-        const overlapEnd = Math.min(Date.now(), bounds.end);
-        if (overlapEnd > overlapStart) {
-          total += (overlapEnd - overlapStart) / 1000;
-        }
-      }
-
-      return total;
-    }
-
-    function setText(id, value) {
-      $(id).textContent = value;
-    }
-
-    function renderTop() {
-      if (!data) return;
-
-      const status = String(data.last_status || (data.current_online_since ? "ONLINE" : "OFFLINE")).toUpperCase();
-      const isOnline = status === "ONLINE";
-      const statusNode = $("status");
-      statusNode.textContent = isOnline ? "ONLINE" : "OFFLINE";
-      statusNode.className = `status-value ${isOnline ? "online" : "offline"}`;
-
-      const dot = $("statusDot");
-      dot.className = `status-orb ${isOnline ? "online" : "offline"}`;
-
-      setText("onlineSince", data.current_online_since ? formatDateTime(data.current_online_since) : "—");
-      setText("lastSeen", data.last_seen ? formatDateTime(data.last_seen) : "—");
-
-      const today = getDayKey(new Date());
-      setText("todayTotal", formatDuration(getDayTotal(today)));
-      setText("sessionCount", String(getSessions(today).length));
-      setText("updatedAt", data.updated_at ? `Updated ${formatDateTime(data.updated_at)}` : "Waiting for update");
-    }
-
-    function populateSelector() {
-      const select = $("daySelect");
-      const previous = selectedDay;
-      const today = getDayKey(new Date());
-      const options = [{ value: "today", label: `Today — ${formatDay(today)}` }];
-
-      getLast7Days().filter(day => day !== today).forEach(day => {
-        options.push({ value: day, label: formatDay(day) });
-      });
-      options.push({ value: "all", label: "All 7 days" });
-
-      select.replaceChildren();
-      for (const item of options) {
-        const option = document.createElement("option");
-        option.value = item.value;
-        option.textContent = item.label;
-        select.appendChild(option);
-      }
-
-      if (options.some(option => option.value === previous)) {
-        select.value = previous;
-      } else {
-        selectedDay = "today";
-        select.value = "today";
-      }
-    }
-
-    function makeElement(tag, className, text) {
-      const element = document.createElement(tag);
-      if (className) element.className = className;
-      if (text !== undefined) element.textContent = text;
-      return element;
-    }
-
-    function renderSessions(container, sessions) {
-      if (!sessions.length) {
-        container.appendChild(makeElement("div", "empty", "No sessions recorded for this day."));
-        return;
-      }
-
-      [...sessions].sort((a, b) =>
-        (validDate(b.start)?.getTime() || 0) - (validDate(a.start)?.getTime() || 0)
-      ).forEach(session => {
-        const row = makeElement("article", "session");
-        const left = makeElement("div", "session-info");
-        const start = formatTime(session.start);
-        const end = session.end ? formatTime(session.end) : "Now";
-        left.appendChild(makeElement("div", "session-time", `${start} → ${end}`));
-        left.appendChild(makeElement("div", "session-end",
-          session.end ? `Ended ${formatDateTime(session.end)}` : "Currently online"));
-        row.appendChild(left);
-        row.appendChild(makeElement("div", "session-duration", formatDuration(sessionDuration(session))));
-        container.appendChild(row);
-      });
-    }
-
-    // Keep disclosure state independent from rendering. The dashboard refreshes
-    // its data frequently, but that must not reopen or collapse the user's days.
-    const expandedDays = new Set();
-    const initializedDays = new Set();
-
-    function createDayCard(dayKey, expanded) {
-      const sessions = getSessions(dayKey);
-      const wrapper = makeElement("section", `day${expanded ? " open" : ""}`);
-
-      const summary = makeElement("button", "day-summary");
-      summary.type = "button";
-      summary.setAttribute("aria-expanded", String(expanded));
-
-      const titleBlock = makeElement("div", "day-heading");
-      const isToday = dayKey === getDayKey(new Date());
-      titleBlock.appendChild(makeElement("div", "day-title", isToday ? "Today" : formatDay(dayKey)));
-      titleBlock.appendChild(makeElement("div", "day-date", formatDay(dayKey)));
-
-      const total = makeElement("div", "day-total", formatDuration(getDayTotal(dayKey)));
-      const count = makeElement("div", "day-sessions");
-      count.appendChild(document.createTextNode(`${sessions.length} ${sessions.length === 1 ? "session" : "sessions"}`));
-      count.appendChild(makeElement("span", "arrow", "⌄"));
-
-      summary.append(titleBlock, total, count);
-
-      const details = makeElement("div", "day-details");
-      renderSessions(details, sessions);
-
-      summary.addEventListener("click", () => {
-        const isOpen = wrapper.classList.toggle("open");
-        summary.setAttribute("aria-expanded", String(isOpen));
-
-        if (isOpen) {
-          expandedDays.add(dayKey);
-        } else {
-          expandedDays.delete(dayKey);
-        }
-        initializedDays.add(dayKey);
-      });
-
-      wrapper.append(summary, details);
-      return wrapper;
-    }
-
-    function renderHistory() {
-      if (!data) return;
-      const history = $("history");
-      const fragment = document.createDocumentFragment();
-
-      if (selectedDay === "all") {
-        getLast7Days().forEach((day, index) => {
-          // Open the newest day by default only the first time it is shown.
-          if (!initializedDays.has(day)) {
-            if (index === 0) expandedDays.add(day);
-            initializedDays.add(day);
-          }
-          fragment.appendChild(createDayCard(day, expandedDays.has(day)));
-        });
-      } else {
-        const day = selectedDay === "today" ? getDayKey(new Date()) : selectedDay;
-        // A day opens by default on first visit; later refreshes respect its state.
-        if (!initializedDays.has(day)) {
-          expandedDays.add(day);
-          initializedDays.add(day);
-        }
-        fragment.appendChild(createDayCard(day, expandedDays.has(day)));
-      }
-
-      history.replaceChildren(fragment);
-    }
-
-    async function loadData() {
-      try {
-        const response = await fetch(`${DATA_URL}?t=${Date.now()}`, {
-          cache: "no-store",
-          headers: { "Accept": "application/json" }
-        });
-        if (!response.ok) throw new Error(`Server returned HTTP ${response.status}`);
-
-        const nextData = await response.json();
-        if (!nextData || typeof nextData !== "object") {
-          throw new Error("The activity endpoint returned invalid JSON data.");
-        }
-
-        data = nextData;
-        $("error").style.display = "none";
-        populateSelector();
-        renderTop();
-        renderHistory();
-      } catch (error) {
-        console.error("Dashboard refresh failed:", error);
-        $("error").textContent = `Unable to load activity data: ${error.message}`;
-        $("error").style.display = "block";
-      }
-    }
-
-    $("daySelect").addEventListener("change", event => {
-      selectedDay = event.target.value;
-      renderHistory();
-    });
-
-
-
-
-    // Tiny platform-runner: the robot stays grounded on real dashboard surfaces.
-    // It walks along card tops, jumps to higher surfaces and drops to lower ones.
-    const mascotMessages = [
-      "Abhi says hii, sunshine! 👋",
-      "Hey cutie, keep that smile going 😉",
-      "That move was smooth… just like you 😏",
-      "A little progress looks good on you 💙",
-      "Come on, superstar — one more step! ✨",
-      "Don't give up now. You've got this! 💪",
-      "Oops, I fell… still got my charm though 😌",
-      "Abhi told me to remind you: you're amazing!",
-      "Psst… yes you. Keep chasing that goal 😉",
-      "Strong moves, brighter future. Let's go!",
-      "Need a little help? Abhi's just a message away 💬",
-      "Take a breath, gorgeous. Then go again 🌸",
-      "That landing deserves a little applause 👏",
-      "Fall, get up, glow up. That's the rule ✨",
-      "Hey hey! I was hoping to see you 😊",
-      "You're doing better than you think. Keep going!",
-      "If determination were a look, you'd be rocking it 😉",
-      "Abhi says: stay focused and keep shining! 🌟",
-      "One more jump? For me? Pretty please 😄",
-      "Rest a little, then show the world what you've got 💙"
-    ];
-    const mascot = $("mascot");
-    const mascotBubble = $("mascotBubble");
-    let mascotMessageIndex = 0;
-    let mascotHideTimer;
-    let platformIndex = 0;
-    let moving = false;
-
-    function showMascotMessage(message, duration = 3000) {
-      mascotBubble.textContent = message;
-      mascot.classList.add("show-message");
-      clearTimeout(mascotHideTimer);
-      mascotHideTimer = setTimeout(() => mascot.classList.remove("show-message"), duration);
-    }
-    function setPose(pose) {
-      mascot.classList.remove("walking","jumping","falling","climbing","waving","sad");
-      mascot.classList.add(pose);
-    }
-
-    function getPlatforms() {
-      const selectors = [".status-panel", ".stat", ".history", ".contact-card"];
-      const found = [];
-      selectors.forEach(selector => {
-        document.querySelectorAll(selector).forEach(el => {
-          const r = el.getBoundingClientRect();
-          if (r.width > 80 && r.bottom > 70 && r.top < innerHeight - 55) {
-            found.push({ x: Math.max(8, Math.min(innerWidth - 68, r.left + Math.min(r.width - 70, r.width * .55))),
-                         y: r.top - 78, right: r.right });
-          }
-        });
-      });
-      return found.sort((a,b) => a.y - b.y);
-    }
-
-    function animateSegment(from, to, mode, duration) {
-      return new Promise(resolve => {
-        const start = performance.now();
-        const dx = to.x - from.x, dy = to.y - from.y;
-        setPose(mode);
-        function frame(now) {
-          const t = Math.min(1, (now - start) / duration);
-          const eased = t * t * (3 - 2 * t);
-          let lift = 0;
-          if (mode === "jumping") lift = -Math.sin(Math.PI * t) * 62;
-          if (mode === "falling") lift = Math.sin(Math.PI * t) * 18;
-          mascot.style.left = `${from.x + dx * eased}px`;
-          mascot.style.top = `${from.y + dy * eased + lift}px`;
-          if (t < 1) requestAnimationFrame(frame);
-          else resolve();
-        }
-        requestAnimationFrame(frame);
-      });
-    }
-
-    async function mascotRun() {
-      if (moving || document.hidden) return;
-      const platforms = getPlatforms();
-      if (!platforms.length) return;
-      moving = true;
-      const current = { x: parseFloat(mascot.style.left) || platforms[0].x,
-                        y: parseFloat(mascot.style.top) || platforms[0].y };
-      const next = platforms[platformIndex % platforms.length];
-      platformIndex++;
-
-      const vertical = next.y - current.y;
-      const horizontal = next.x - current.x;
-      if (Math.abs(vertical) < 28) {
-        await animateSegment(current, next, "walking", Math.max(700, Math.abs(horizontal) * 9));
-      } else if (vertical < 0) {
-        // A visible jump arc to a higher card edge.
-        await animateSegment(current, next, "jumping", 850);
-      } else {
-        // Step off the ledge, fall, and land on the lower card.
-        const ledge = { x: current.x + Math.sign(horizontal || 1) * 26, y: current.y };
-        await animateSegment(current, ledge, "walking", 320);
-        await animateSegment(ledge, next, "falling", 760);
-      }
-
-      if (platformIndex % 3 === 0) {
-        setPose("waving");
-        showMascotMessage(mascotMessages[mascotMessageIndex % mascotMessages.length]);
-      } else {
-        setPose("sad");
-        if (platformIndex % 2 === 0) showMascotMessage(mascotMessages[mascotMessageIndex % mascotMessages.length]);
-      }
-      mascotMessageIndex++;
-      moving = false;
-    }
-
-    // Small opening greeting, then begin the side-scrolling platform routine.
-    setPose("waving");
-    showMascotMessage(mascotMessages[0], 4000);
-    setTimeout(async () => {
-      const first = getPlatforms()[0] || { x: 20, y: 220 };
-      mascot.style.left = `${first.x}px`;
-      mascot.style.top = `${first.y}px`;
-      setPose("sad");
-      await mascotRun();
-      setInterval(mascotRun, 2300);
-    }, 1800);
-
-    window.addEventListener("resize", () => {
-      if (!moving) {
-        const platforms = getPlatforms();
-        if (platforms.length) {
-          const p = platforms[platformIndex % platforms.length];
-          mascot.style.left = `${p.x}px`;
-          mascot.style.top = `${p.y}px`;
-        }
-      }
-    });
-    window.addEventListener("scroll", () => {
-      // Recalculate surfaces after scrolling; the mascot doesn't drift off-screen.
-      if (!moving) {
-        const platforms = getPlatforms();
-        if (platforms.length) {
-          const p = platforms[platformIndex % platforms.length];
-          mascot.style.left = `${p.x}px`;
-          mascot.style.top = `${p.y}px`;
-        }
-      }
-    }, { passive: true });
-
-
-    loadData();
-    refreshTimer = window.setInterval(loadData, REFRESH_INTERVAL);
-
-    // Update visible live durations once per second without refetching the JSON.
-    window.setInterval(() => {
-      if (!data) return;
-      renderTop();
-      renderHistory();
-    }, 1000);
-
-    // Pause network polling in a hidden tab and refresh immediately when revisited.
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) {
-        if (refreshTimer) window.clearInterval(refreshTimer);
-      } else {
-        loadData();
-        refreshTimer = window.setInterval(loadData, REFRESH_INTERVAL);
-      }
-    });
-  </script>
-</body>
-</html>
+    <header cla
