@@ -357,6 +357,62 @@
       background: var(--green);
     }
 
+
+
+
+    /* Small 3D side-scrolling platform mascot */
+    .mascot {
+      position: fixed; z-index: 40; left: 20px; top: 220px;
+      width: 60px; height: 82px; pointer-events: none;
+      transition: left .08s linear, top .08s linear;
+    }
+    .mascot-bubble {
+      position:absolute; left:50%; top:-29px; transform:translateX(-50%) translateY(5px);
+      width:max-content; max-width:150px; padding:6px 9px; border-radius:10px 10px 10px 3px;
+      border:1px solid #8dc5ff55; color:#f6fbff; background:linear-gradient(145deg,#24466e,#132843);
+      box-shadow:0 5px 16px #0007; font-size:10px; font-weight:750; line-height:1.3;
+      opacity:0; transition:opacity .2s,transform .2s;
+    }
+    .mascot.show-message .mascot-bubble { opacity:1; transform:translateX(-50%) translateY(0); }
+    .bot3d { position:absolute; left:0; bottom:0; width:104px; height:138px; transform:scale(.56); transform-origin:bottom left; }
+    .bot-shadow { position:absolute; width:66px; height:13px; left:19px; bottom:3px; border-radius:50%; background:#02081788; filter:blur(5px); }
+    .bot-head {
+      position:absolute; z-index:4; left:10px; top:9px; width:84px; height:70px;
+      border-radius:48% 48% 43% 43%; border:2px solid #a9dcff;
+      background:linear-gradient(145deg,#b6e4ff 0%,#5ca9eb 27%,#2874bd 72%,#174d89 100%);
+      box-shadow:inset 5px 6px 8px #ffffff88,inset -7px -8px 12px #103d78aa,0 8px 13px #02081766;
+      transform:translateZ(13px) rotateY(-9deg);
+    }
+    .bot-face { position:absolute; inset:11px 7px 9px; border-radius:48% 48% 45% 45%; background:linear-gradient(145deg,#fff,#eef5ff 65%,#d5e3f5); box-shadow:inset 0 2px 5px #fff,0 1px 3px #17436d66; }
+    .bot-eye { position:absolute; top:22px; width:13px; height:16px; border-radius:55% 55% 48% 48%; background:#101827; box-shadow:inset 2px 2px 2px #ffffff55; }
+    .bot-eye.left { left:19px; transform:rotate(8deg); } .bot-eye.right { right:19px; transform:rotate(-8deg); }
+    .bot-mouth { position:absolute; left:50%; top:43px; width:10px; height:6px; transform:translateX(-50%); border-bottom:2px solid #263044; border-radius:50%; }
+    .bot-antenna { position:absolute; z-index:5; left:48px; top:0; width:7px; height:16px; border-radius:8px; background:linear-gradient(90deg,#d8f0ff,#438bd0); }
+    .bot-antenna:after { content:""; position:absolute; left:-5px; top:-9px; width:17px; height:17px; border-radius:50%; background:radial-gradient(circle at 30% 25%,#fff,#8bd0ff 35%,#2777c1 78%); box-shadow:0 2px 5px #0005; }
+    .bot-body { position:absolute; z-index:3; left:27px; top:76px; width:52px; height:43px; border-radius:42% 42% 35% 35%; background:linear-gradient(145deg,#9dd9ff,#398de0 55%,#1d5b9d); border:1px solid #8ccaff; box-shadow:inset 4px 4px 7px #ffffff77,inset -5px -5px 8px #123f77aa,0 5px 9px #0005; }
+    .bot-core { position:absolute; left:17px; top:12px; width:18px; height:18px; border-radius:50%; background:radial-gradient(circle at 32% 28%,#fff,#d9eaff 65%,#a4c7e9); }
+    .bot-arm { position:absolute; z-index:2; top:81px; width:17px; height:33px; border-radius:12px; background:linear-gradient(90deg,#1c66a9,#8ed0ff 45%,#2874bb); box-shadow:inset 2px 1px 3px #fff8,0 3px 5px #0004; transform-origin:50% 7px; }
+    .bot-arm.left { left:13px; } .bot-arm.right { right:13px; }
+    .bot-leg { position:absolute; z-index:1; top:111px; width:19px; height:24px; border-radius:8px 8px 10px 10px; background:linear-gradient(90deg,#1c5d9b,#8bcfff 45%,#276eb2); transform-origin:50% 3px; box-shadow:inset 2px 1px 3px #fff8; }
+    .bot-leg.left { left:32px; } .bot-leg.right { right:32px; }
+    .mascot.walking .bot-leg.left { animation:bot-step .24s ease-in-out infinite alternate; }
+    .mascot.walking .bot-leg.right { animation:bot-step .24s ease-in-out infinite alternate-reverse; }
+    .mascot.walking .bot-arm.left { animation:bot-swing .24s ease-in-out infinite alternate-reverse; }
+    .mascot.walking .bot-arm.right { animation:bot-swing .24s ease-in-out infinite alternate; }
+    .mascot.jumping .bot-leg { animation:bot-tuck .4s ease-in-out infinite alternate; }
+    .mascot.falling .bot-arm { animation:bot-flail .18s ease-in-out infinite alternate; }
+    .mascot.climbing .bot-arm.left { animation:bot-climb .3s ease-in-out infinite alternate; }
+    .mascot.climbing .bot-arm.right { animation:bot-climb .3s ease-in-out infinite alternate-reverse; }
+    .mascot.waving .bot-arm.right { animation:bot-wave .28s ease-in-out infinite alternate; }
+    .mascot.sad .bot-mouth { width:12px; height:6px; border-bottom:0; border-top:2px solid #263044; top:44px; }
+    @keyframes bot-step { from{transform:rotate(-32deg)} to{transform:rotate(32deg)} }
+    @keyframes bot-swing { from{transform:rotate(-28deg)} to{transform:rotate(28deg)} }
+    @keyframes bot-climb { from{transform:rotate(-65deg)} to{transform:rotate(35deg)} }
+    @keyframes bot-wave { from{transform:rotate(-55deg)} to{transform:rotate(-135deg)} }
+    @keyframes bot-tuck { from{transform:rotate(-18deg)} to{transform:rotate(24deg)} }
+    @keyframes bot-flail { from{transform:rotate(-55deg)} to{transform:rotate(55deg)} }
+    @media(max-width:520px){.mascot-bubble{max-width:125px;font-size:9px}}
+    @media(prefers-reduced-motion:reduce){.mascot,.mascot *{animation:none!important;transition:none!important}}
     @media (max-width: 760px) {
       body { padding: 21px 14px 32px; }
       .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -432,6 +488,21 @@
       <div id="updatedAt" class="updated">Connecting to activity data…</div>
     </section>
 
+
+    <div id="mascot" class="mascot sad" aria-live="polite" aria-label="Abhi's cheerful little companion">
+      <div id="mascotBubble" class="mascot-bubble">Abhi says hii, sunshine! 👋</div>
+      <div class="bot3d" aria-hidden="true">
+        <div class="bot-shadow"></div>
+        <div class="bot-antenna"></div>
+        <div class="bot-head"><div class="bot-face">
+          <span class="bot-eye left"></span><span class="bot-eye right"></span><span class="bot-mouth"></span>
+        </div></div>
+        <div class="bot-arm left"></div><div class="bot-arm right"></div>
+        <div class="bot-body"><span class="bot-core"></span></div>
+        <div class="bot-leg left"></div><div class="bot-leg right"></div>
+      </div>
+    </div>
+    
     <section class="stats" aria-label="Activity summary">
       <article class="stat">
         <div class="stat-top"><span class="eyebrow">Connection</span><span class="stat-icon" aria-hidden="true">◷</span></div>
@@ -816,6 +887,156 @@
       selectedDay = event.target.value;
       renderHistory();
     });
+
+
+
+
+    // Tiny platform-runner: the robot stays grounded on real dashboard surfaces.
+    // It walks along card tops, jumps to higher surfaces and drops to lower ones.
+    const mascotMessages = [
+      "Abhi says hii, sunshine! 👋",
+      "Hey cutie, keep that smile going 😉",
+      "That move was smooth… just like you 😏",
+      "A little progress looks good on you 💙",
+      "Come on, superstar — one more step! ✨",
+      "Don't give up now. You've got this! 💪",
+      "Oops, I fell… still got my charm though 😌",
+      "Abhi told me to remind you: you're amazing!",
+      "Psst… yes you. Keep chasing that goal 😉",
+      "Strong moves, brighter future. Let's go!",
+      "Need a little help? Abhi's just a message away 💬",
+      "Take a breath, gorgeous. Then go again 🌸",
+      "That landing deserves a little applause 👏",
+      "Fall, get up, glow up. That's the rule ✨",
+      "Hey hey! I was hoping to see you 😊",
+      "You're doing better than you think. Keep going!",
+      "If determination were a look, you'd be rocking it 😉",
+      "Abhi says: stay focused and keep shining! 🌟",
+      "One more jump? For me? Pretty please 😄",
+      "Rest a little, then show the world what you've got 💙"
+    ];
+    const mascot = $("mascot");
+    const mascotBubble = $("mascotBubble");
+    let mascotMessageIndex = 0;
+    let mascotHideTimer;
+    let platformIndex = 0;
+    let moving = false;
+
+    function showMascotMessage(message, duration = 3000) {
+      mascotBubble.textContent = message;
+      mascot.classList.add("show-message");
+      clearTimeout(mascotHideTimer);
+      mascotHideTimer = setTimeout(() => mascot.classList.remove("show-message"), duration);
+    }
+    function setPose(pose) {
+      mascot.classList.remove("walking","jumping","falling","climbing","waving","sad");
+      mascot.classList.add(pose);
+    }
+
+    function getPlatforms() {
+      const selectors = [".status-panel", ".stat", ".history", ".contact-card"];
+      const found = [];
+      selectors.forEach(selector => {
+        document.querySelectorAll(selector).forEach(el => {
+          const r = el.getBoundingClientRect();
+          if (r.width > 80 && r.bottom > 70 && r.top < innerHeight - 55) {
+            found.push({ x: Math.max(8, Math.min(innerWidth - 68, r.left + Math.min(r.width - 70, r.width * .55))),
+                         y: r.top - 78, right: r.right });
+          }
+        });
+      });
+      return found.sort((a,b) => a.y - b.y);
+    }
+
+    function animateSegment(from, to, mode, duration) {
+      return new Promise(resolve => {
+        const start = performance.now();
+        const dx = to.x - from.x, dy = to.y - from.y;
+        setPose(mode);
+        function frame(now) {
+          const t = Math.min(1, (now - start) / duration);
+          const eased = t * t * (3 - 2 * t);
+          let lift = 0;
+          if (mode === "jumping") lift = -Math.sin(Math.PI * t) * 62;
+          if (mode === "falling") lift = Math.sin(Math.PI * t) * 18;
+          mascot.style.left = `${from.x + dx * eased}px`;
+          mascot.style.top = `${from.y + dy * eased + lift}px`;
+          if (t < 1) requestAnimationFrame(frame);
+          else resolve();
+        }
+        requestAnimationFrame(frame);
+      });
+    }
+
+    async function mascotRun() {
+      if (moving || document.hidden) return;
+      const platforms = getPlatforms();
+      if (!platforms.length) return;
+      moving = true;
+      const current = { x: parseFloat(mascot.style.left) || platforms[0].x,
+                        y: parseFloat(mascot.style.top) || platforms[0].y };
+      const next = platforms[platformIndex % platforms.length];
+      platformIndex++;
+
+      const vertical = next.y - current.y;
+      const horizontal = next.x - current.x;
+      if (Math.abs(vertical) < 28) {
+        await animateSegment(current, next, "walking", Math.max(700, Math.abs(horizontal) * 9));
+      } else if (vertical < 0) {
+        // A visible jump arc to a higher card edge.
+        await animateSegment(current, next, "jumping", 850);
+      } else {
+        // Step off the ledge, fall, and land on the lower card.
+        const ledge = { x: current.x + Math.sign(horizontal || 1) * 26, y: current.y };
+        await animateSegment(current, ledge, "walking", 320);
+        await animateSegment(ledge, next, "falling", 760);
+      }
+
+      if (platformIndex % 3 === 0) {
+        setPose("waving");
+        showMascotMessage(mascotMessages[mascotMessageIndex % mascotMessages.length]);
+      } else {
+        setPose("sad");
+        if (platformIndex % 2 === 0) showMascotMessage(mascotMessages[mascotMessageIndex % mascotMessages.length]);
+      }
+      mascotMessageIndex++;
+      moving = false;
+    }
+
+    // Small opening greeting, then begin the side-scrolling platform routine.
+    setPose("waving");
+    showMascotMessage(mascotMessages[0], 4000);
+    setTimeout(async () => {
+      const first = getPlatforms()[0] || { x: 20, y: 220 };
+      mascot.style.left = `${first.x}px`;
+      mascot.style.top = `${first.y}px`;
+      setPose("sad");
+      await mascotRun();
+      setInterval(mascotRun, 2300);
+    }, 1800);
+
+    window.addEventListener("resize", () => {
+      if (!moving) {
+        const platforms = getPlatforms();
+        if (platforms.length) {
+          const p = platforms[platformIndex % platforms.length];
+          mascot.style.left = `${p.x}px`;
+          mascot.style.top = `${p.y}px`;
+        }
+      }
+    });
+    window.addEventListener("scroll", () => {
+      // Recalculate surfaces after scrolling; the mascot doesn't drift off-screen.
+      if (!moving) {
+        const platforms = getPlatforms();
+        if (platforms.length) {
+          const p = platforms[platformIndex % platforms.length];
+          mascot.style.left = `${p.x}px`;
+          mascot.style.top = `${p.y}px`;
+        }
+      }
+    }, { passive: true });
+
 
     loadData();
     refreshTimer = window.setInterval(loadData, REFRESH_INTERVAL);
