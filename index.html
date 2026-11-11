@@ -91,6 +91,33 @@
       background: var(--green);
       box-shadow: 0 0 12px rgba(54, 217, 150, .7);
     }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+    .top-contact {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 39px;
+      padding: 0 13px;
+      border: 1px solid rgba(98, 169, 255, .32);
+      border-radius: 12px;
+      color: #eef6ff;
+      background: linear-gradient(135deg, #278de8, #1766bd);
+      box-shadow: 0 7px 20px rgba(30, 119, 207, .18);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      transition: transform .18s ease, filter .18s ease;
+    }
+    .top-contact:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    .top-contact svg { width: 15px; height: 15px; fill: currentColor; }
 
     .panel {
       border: 1px solid var(--border);
@@ -339,7 +366,10 @@
       body { padding: 16px 11px 28px; }
       .topbar { align-items: flex-start; margin-bottom: 18px; }
       .brand-mark { width: 41px; height: 41px; flex-basis: 41px; border-radius: 13px; }
+      .topbar { flex-wrap: wrap; }
+      .top-actions { gap: 7px; }
       .live-pill { padding: 8px 9px; font-size: 9px; }
+      .top-contact { min-height: 36px; padding: 0 10px; font-size: 11px; }
       .status-panel { align-items: flex-start; flex-direction: column; gap: 13px; padding: 18px; }
       .updated { padding-left: 30px; text-align: left; }
       .status-value { font-size: 22px; }
@@ -376,7 +406,17 @@
           <p class="subtitle">Activity monitoring dashboard</p>
         </div>
       </div>
-      <div class="live-pill">Live dashboard</div>
+      <div class="top-actions">
+        <div class="live-pill">Live dashboard</div>
+        <a class="top-contact"
+           href="https://t.me/Never_again098"
+           target="_blank"
+           rel="noopener noreferrer"
+           aria-label="Contact Abhi on Telegram">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.7 4.35 18.6 19c-.23 1.04-.84 1.3-1.7.81l-4.7-3.47-2.27 2.18c-.25.25-.46.46-.94.46l.34-4.78 8.7-7.86c.38-.34-.08-.53-.59-.19L6.69 13.1 2.1 11.67c-1-.31-1.02-1 .21-1.49L20.25 3.2c.83-.3 1.56.2 1.45 1.15Z"/></svg>
+          Contact Abhi
+        </a>
+      </div>
     </header>
 
     <div id="error" class="error" role="alert" aria-live="polite"></div>
@@ -438,8 +478,8 @@
 
     <section class="contact-card" aria-label="Restart monitoring contact">
       <div class="contact-copy">
-        <h2 class="contact-title">Want monitoring to start again?</h2>
-        <p class="contact-message">Content me on Telegram if you want the monitoring to be started again.</p>
+        <h2 class="contact-title">Need help?</h2>
+        <p class="contact-message">Contact Abhi on Telegram for any problem.</p>
       </div>
       <a class="telegram-link"
          href="https://t.me/Never_again098"
@@ -676,6 +716,11 @@
       });
     }
 
+    // Keep disclosure state independent from rendering. The dashboard refreshes
+    // its data frequently, but that must not reopen or collapse the user's days.
+    const expandedDays = new Set();
+    const initializedDays = new Set();
+
     function createDayCard(dayKey, expanded) {
       const sessions = getSessions(dayKey);
       const wrapper = makeElement("section", `day${expanded ? " open" : ""}`);
@@ -702,6 +747,13 @@
       summary.addEventListener("click", () => {
         const isOpen = wrapper.classList.toggle("open");
         summary.setAttribute("aria-expanded", String(isOpen));
+
+        if (isOpen) {
+          expandedDays.add(dayKey);
+        } else {
+          expandedDays.delete(dayKey);
+        }
+        initializedDays.add(dayKey);
       });
 
       wrapper.append(summary, details);
@@ -715,11 +767,21 @@
 
       if (selectedDay === "all") {
         getLast7Days().forEach((day, index) => {
-          fragment.appendChild(createDayCard(day, index === 0));
+          // Open the newest day by default only the first time it is shown.
+          if (!initializedDays.has(day)) {
+            if (index === 0) expandedDays.add(day);
+            initializedDays.add(day);
+          }
+          fragment.appendChild(createDayCard(day, expandedDays.has(day)));
         });
       } else {
         const day = selectedDay === "today" ? getDayKey(new Date()) : selectedDay;
-        fragment.appendChild(createDayCard(day, true));
+        // A day opens by default on first visit; later refreshes respect its state.
+        if (!initializedDays.has(day)) {
+          expandedDays.add(day);
+          initializedDays.add(day);
+        }
+        fragment.appendChild(createDayCard(day, expandedDays.has(day)));
       }
 
       history.replaceChildren(fragment);
